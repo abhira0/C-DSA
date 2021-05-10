@@ -254,50 +254,6 @@ class LinkedList:
         print(tmp_node.key)
         print(tmp_node.key == self.tail.key, self.tail.key)
 
-    def max(self):
-        if self.isEmpty():
-            print("EMPTY LIST")
-            return
-        maxi = self.head.key
-        mov_head = self.head
-        while mov_head:
-            maxi = max(maxi, mov_head.key)
-            mov_head = mov_head.next
-        return maxi
-
-    def min(self):
-        if self.isEmpty():
-            print("EMPTY LIST")
-            return
-        mini = self.head.key
-        mov_head = self.head
-        while mov_head:
-            mini = min(mini, mov_head.key)
-            mov_head = mov_head.next
-        return mini
-
-    def sum(self):
-        if self.isEmpty():
-            print("EMPTY LIST")
-            return
-        summer = self.head.key
-        mov_head = self.head
-        while mov_head:
-            summer += mov_head.key
-            mov_head = mov_head.next
-        return summer
-
-    def product(self):
-        if self.isEmpty():
-            print("EMPTY LIST")
-            return
-        prod = self.head.key
-        mov_head = self.head
-        while mov_head:
-            prod *= mov_head.key
-            mov_head = mov_head.next
-        return prod
-
 
 class DLLNode:
     def __init__(self, key, prev_node=None, next_node=None):
