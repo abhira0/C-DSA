@@ -10,14 +10,24 @@ class LinkedList:
         self.tail = None
         self.len = 0
 
-    def pushFront(self, key):
+    def pushFront(self, key) -> None:
+        """Add a node at the front of the linked list
+
+        Args:
+            key (any): Value of the node to be added
+        """
         node = LLNode(key, self.head)
         self.head = node
         if self.tail == None:
             self.tail = node
         self.len += 1
 
-    def pushBack(self, key):
+    def pushBack(self, key) -> None:
+        """Add a node at the end of the linked list
+
+        Args:
+            key (any): Value of the node to be added
+        """
         node = LLNode(key)
         if self.isEmpty():  # if empty
             self.head = node
@@ -294,15 +304,3 @@ class DLLNode:
         self.key = key
         self.next = next_node
         self.prev = prev_node
-
-
-ll = LinkedList()
-ll.pushFront(100)
-for i in range(0, 10):
-    ll.addAtIndex(i, i * i)
-ll.display()
-ll.deleteAtIndex(0)
-ll.deleteAtIndex(0)
-ll.display()
-ll.deleteAtIndex(9)
-ll.display()
