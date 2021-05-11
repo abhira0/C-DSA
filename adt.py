@@ -26,13 +26,24 @@ class LLNode:
 
 
 class LinkedList:
-    def __init__(self, iterable=None):
+    def __init__(self, iterable=[]):
         self.head = None
         self.tail = None
         self.len = 0
-        if iterable:
-            for element in iterable:
-                self.pushBack(element)
+        self.extend(iterable)
+
+    def extend(self, iterable) -> None:
+        """Add all the keys specified in the given iterable to the end of the existing linked list
+
+        Args:
+            iterable (any): Must be an python iterable which consists of keys to be added
+
+        Constraints:
+            Time: O(m) # m= length(iterable)
+            Space: O(1)
+        """
+        for key in iterable:
+            self.pushBack(key)
 
     def pushFront(self, key) -> None:
         """Add a node at the front of the linked list
@@ -257,15 +268,6 @@ class LinkedList:
             # insert after index-1 position so that the newly inserted node will be at given index
             self.addAfterNode(mov_head, key)
         return 1
-
-    def extend(self, iterable) -> None:
-        """Add all the keys specified in the given iterable to the end of the existing linked list
-
-        Args:
-            iterable (any): Must be an python iterable which consists of keys to be added
-        """
-        for key in iterable:
-            self.pushBack(key)
 
     def deleteAtIndex(self, index: int):
         """
@@ -692,6 +694,10 @@ class DoublyLinkedList:
 
         Args:
             iterable (any): Must be an python iterable which consists of keys to be added
+
+        Constraints:
+            Time: O(m) # m= length(iterable)
+            Space: O(1)
         """
         for key in iterable:
             self.pushBack(key)
