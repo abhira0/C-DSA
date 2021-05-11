@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 class LLNode:
     def __init__(self, key, next_node=None):
         self.key = key
@@ -409,7 +412,7 @@ class LinkedList:
             print("Improper tail at:", self.tail.key)
 
 
-class LinkedlistBinOp:
+class LinkedlistOp:
     @staticmethod
     def isCyclic1(ll: LinkedList) -> bool:
         """Linked List Cycle: Check whether the given linked list is cyclic. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
@@ -613,15 +616,50 @@ class LinkedlistBinOp:
             ll.head = odd_head
             ll.tail = even_tail
 
+    @staticmethod
+    def isPalindrome(ll: LinkedList) -> bool:
+        """Palindrome Linked List: Given  a singly linked list, return true if it is a palindrome.
+
+        Args:
+            ll (LinkedList): Linked list to be checked
+
+        Returns:
+            bool: Result
+                True  : If given linked list is a palindrome
+                False : If given linked list is not a palindrome
+        """
+        # added to prevent modification of Linked List passed as argument (original)
+        ll = deepcopy(ll)
+        if ll.head == None or ll.head.next == None:
+            return True
+        cut_ind = ll.len // 2
+        mov_ind, tmp = 0, ll.head
+        while mov_ind != cut_ind - 1:
+            tmp = tmp.next
+            mov_ind += 1
+        # making new linked list with new_head as its head
+        new_head = tmp.next
+        tmp.next = None
+        # reverse the second half linked list
+        tmp1, tmp2, tmp3 = new_head, None, None
+        while tmp1:
+            tmp3 = tmp2
+            tmp2 = tmp1
+            tmp1 = tmp1.next
+            tmp2.next = tmp3
+        new_head = tmp2
+        # now the we have two linked list
+        mov_head, mov_new_head = ll.head, new_head
+        while mov_head and mov_new_head:
+            if mov_new_head.val != mov_head.val:
+                return False
+            mov_head = mov_head.next
+            mov_new_head = mov_new_head.next
+        return True
+
 
 class DLLNode:
     def __init__(self, key, prev_node=None, next_node=None):
         self.key = key
         self.next = next_node
         self.prev = prev_node
-
-
-ll = LinkedList(range(1, 10))
-ll.display()
-LinkedlistBinOp.oddEvenList(ll)
-ll.display()
