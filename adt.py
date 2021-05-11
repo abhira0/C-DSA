@@ -494,7 +494,7 @@ class LinkedlistBinOp:
         return None
 
     @staticmethod
-    def removeNthFromEnd(ll: LinkedList, n: int):
+    def removeNthFromEnd(ll: LinkedList, n: int) -> None:
         """Remove Nth Node From End of List: Given a linked list, remove the nth node from the end of the list.
 
         Args:
@@ -519,19 +519,22 @@ class LinkedlistBinOp:
 
         Returns:
             None: Returns None
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
         """
-        if ll.head == None:  # empty list
-            return None
-        if ll.head.next == None:  # single node list
-            return None  # no changes
-        tmp1, tmp2, tmp3 = ll.head, None, None
-        ll.tail = ll.head
-        while tmp1:
-            tmp3 = tmp2
-            tmp2 = tmp1
-            tmp1 = tmp1.next
-            tmp2.next = tmp3
-        ll.head = tmp2
+        if ll.head == None or ll.head.next == None:  # empty list or single node list
+            ...  # no changes
+        else:
+            tmp1, tmp2, tmp3 = ll.head, None, None
+            ll.tail = ll.head
+            while tmp1:
+                tmp3 = tmp2
+                tmp2 = tmp1
+                tmp1 = tmp1.next
+                tmp2.next = tmp3
+            ll.head = tmp2
 
     @staticmethod
     def removeElements(ll: LinkedList, val: int) -> None:
@@ -540,6 +543,10 @@ class LinkedlistBinOp:
         Args:
             ll (LinkedList): Linked list to be modified
             val (int): nodes with the given value will be deleted
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
         """
         if ll.head == None:
             ...
