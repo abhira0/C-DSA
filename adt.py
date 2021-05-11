@@ -112,7 +112,7 @@ class LinkedList:
             -1 : If the list was empty
 
         Constraints:
-            Time: O(1)
+            Time: O(n)
             Space: O(1)
         """
 
@@ -258,6 +258,15 @@ class LinkedList:
             self.addAfterNode(mov_head, key)
         return 1
 
+    def extend(self, iterable) -> None:
+        """Add all the keys specified in the given iterable to the end of the existing linked list
+
+        Args:
+            iterable (any): Must be an python iterable which consists of keys to be added
+        """
+        for key in iterable:
+            self.pushBack(key)
+
     def deleteAtIndex(self, index: int):
         """
         Delete the index-th node in the linked list, if the index is valid.
@@ -294,10 +303,12 @@ class LinkedList:
                 print("Delete op failed: Index out of range")
             else:
                 prev_node.next = mov_head.next
+                tmp_val = mov_head.key
                 del mov_head
                 self.len -= 1
                 if prev_node.next == None:
                     self.tail = prev_node
+                return tmp_val
 
     def find(self, key):
         """Find the given key in the list
@@ -627,6 +638,10 @@ class LinkedlistOp:
             bool: Result
                 True  : If given linked list is a palindrome
                 False : If given linked list is not a palindrome
+
+        Constraints:
+            Time:  O(2n)
+            Space: O(1)
         """
         # added to prevent modification of Linked List passed as argument (original)
         ll = deepcopy(ll)
@@ -663,3 +678,420 @@ class DLLNode:
         self.key = key
         self.next = next_node
         self.prev = prev_node
+
+
+class DoublyLinkedList:
+    def __init__(self, iterable=[]):
+        self.head = None
+        self.tail = None
+        self.len = 0
+        self.extend(iterable)
+
+    def extend(self, iterable) -> None:
+        """Add all the keys specified in the given iterable to the end of the existing linked list
+
+        Args:
+            iterable (any): Must be an python iterable which consists of keys to be added
+        """
+        for key in iterable:
+            self.pushBack(key)
+
+    def pushFront(self, key) -> None:
+        """Add a node at the front of the doubly linked list
+
+        Args:
+            key (any): Value of the node to be added
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        node = DLLNode(key, None, self.head)
+        if self.head:  # if list was not previously empty
+            self.head.prev = node
+        self.head = node
+        if self.tail == None:  # if list was previously empty
+            self.tail = node
+        self.len += 1
+
+    def pushBack(self, key) -> None:
+        """Add a node at the end of the doubly linked list
+
+        Args:
+            key (any): Value of the node to be added
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        node = DLLNode(key)
+        if self.isEmpty():  # if empty
+            self.head = node
+            self.tail = node
+        else:
+            self.tail.next = node
+            node.prev = self.tail
+            self.tail = node
+        self.len += 1
+
+    def popFront(self):
+        """Delete the front node of the doubly linked list and returns the value of it.
+
+        Returns:
+            any: Returns the value of the deleted node
+            -1 : If the list was empty
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        if self.isEmpty():  # if empty
+            print("Cannot pop since it's an EMPTY LIST")
+            return -1
+        if self.head == self.tail:  # if only one node
+            tmp_node = self.head
+            tmp_key = tmp_node.key
+            # Make head and tail as None since its an empty list
+            self.head = None
+            self.tail = None
+            # Delete first node
+            del tmp_node
+            self.len -= 1
+            return tmp_key
+        else:
+            # tmp_node points to first node
+            tmp_node = self.head
+            tmp_key = tmp_node.key
+            # Make prev of 2nd node point to None
+            self.head.next.prev = None
+            # Make head point to 2nd node
+            self.head = self.head.next
+            # Delete tmp_node which points to first node
+            del tmp_node
+            self.len -= 1
+            return tmp_key
+
+    def popBack(self):
+        """Deletes the last node (if exists) of doubly linked list and returns the value of it.
+
+        Returns:
+            any: Returns the value of the deleted node
+            -1 : If the list was empty
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        # if empty or if only one element
+        if self.isEmpty() or self.head == self.tail:
+            return self.popFront()
+        else:
+            # make last node as tmp_node
+            tmp_node = self.tail
+            tmp_val = tmp_node.key
+            # point last but first node's next to None
+            self.tail.prev.next = None
+            # make last but first node as tail
+            self.tail = self.tail.prev
+            # delete last node
+            del tmp_node
+            self.len -= 1
+            return tmp_val
+
+    def addAfter(self, find_key, key) -> int:
+        """Adds a node with specified key after the node with find_key. If multiple node has the value find_key, first find_key in the list will get the priority.
+
+        Args:
+            find_key (any): Value to find in the linked list
+            key (any): Value to be inserted after find_key
+
+        Returns:
+            int: Status
+                -1: List is empty
+                -2: Specified Key is not present in the list
+                 1: Successful insertion
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if self.isEmpty():
+            # print("Cannot insert the key since the list is EMPTY")
+            return -1
+        else:
+            mov_head = self.head
+            while (mov_head) and (mov_head.key != find_key):
+                mov_head = mov_head.next
+            if mov_head == None:
+                # print("Specified Key is not present in the list")
+                return -2
+            else:
+                self.addAfterNode(mov_head, key)
+                return 1
+
+    def addBefore(self, find_key, key) -> int:
+        """Adds a node with specified key before the node with find_key. If multiple node has the value find_key, first find_key in the list will get the priority.
+
+        Args:
+            find_key (any): Value to find in the linked list
+            key (any): Value to be inserted before find_key
+
+        Returns:
+            int: Status
+                -1: List is empty
+                -2: Specified Key is not present in the list
+                 1: Successful insertion
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if self.isEmpty():
+            # print("Cannot insert the key since the list is EMPTY")
+            return -1
+        if self.head.key == find_key:
+            self.pushFront(key)
+        else:
+            mov_head = self.head
+            while (mov_head.next) and (mov_head.next.key != find_key):
+                mov_head = mov_head.next
+            if mov_head.next == None:
+                # print("Specified Key is not present in the list")
+                return -2
+            else:
+                self.addAfterNode(mov_head, key)
+                return 1
+
+    def addAfterNode(self, node: DLLNode, key) -> int:
+        """Add a node of value key after the given linked list node 'node'. If given node is the last node, modify the tail pointer. If the given node is None, raise an Exception
+
+        Args:
+            node (DLLNode): Linked List node used as position to insert a new node
+            key (any): Value for the newly created node
+
+        Returns:
+            int: Status
+                1 : Inserted at the middle of the linked list
+                2 : Inserted at the end of the linked list, so tail is modified
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        new_node = DLLNode(key, node, node.next)
+        if node.next:  # if given node is not the last node
+            node.next.prev = new_node
+        node.next = new_node
+        self.len += 1
+        if new_node.next == None:
+            self.tail = new_node
+            return 2
+        return 1
+
+    def addAtIndex(self, index: int, key) -> int:
+        """Add a node of value key before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted.
+
+        Args:
+            index (int): Position of the key after insertion
+            key (any): Key to be inserted at the given index
+
+        Returns:
+            int: Status
+                 1 : insertion successful
+                -1 : negative index
+                -2 : index greater than length+1
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if index < 0:
+            return -1
+        elif index == 0:
+            self.pushFront(key)
+        else:
+            mov_ind = 0
+            mov_head = self.head
+            # goto index-1 position
+            while mov_head and mov_ind != index - 1:
+                mov_head = mov_head.next
+                mov_ind += 1
+            if mov_head == None:  # index greater than length+1
+                return -2
+            # insert after index-1 position so that the newly inserted node will be at given index
+            self.addAfterNode(mov_head, key)
+        return 1
+
+    def deleteAtIndex(self, index: int):
+        """
+        Delete the index-th node in the linked list, if the index is valid.
+
+        Args:
+            index (int): Position to be deleted
+
+        Returns:
+            any : Value of the deleted node if its deleted
+                -1 : negative index
+                -2 : index greater than length+1
+                -3 : empty list
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if index < 0:
+            return -1
+        elif self.isEmpty():
+            # print("Cannot delete anything from an EMPTY LIST")
+            return -3
+        elif index == 0:
+            return self.popFront()
+        else:
+            mov_head = self.head
+            mov_ind = 0
+            while mov_head and mov_ind != index:
+                mov_head = mov_head.next
+                mov_ind += 1
+            if mov_head == None:
+                # print("Delete op failed: Index out of range")
+                return -2
+            else:
+                prev_node = mov_head.prev
+                mov_head.prev.next = mov_head.next
+                if mov_head.next:
+                    mov_head.next.prev = mov_head.prev
+                tmp_val = mov_head.key
+                del mov_head
+                self.len -= 1
+                if prev_node.next == None:
+                    self.tail = prev_node
+                return tmp_val
+
+    def find(self, key):
+        """Find the given key in the list
+
+        Args:
+            key (any): Key to be found
+
+        Returns:
+            node: If key is present
+            None: If key is not present
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        mov_head = self.head
+        while mov_head and mov_head.key != key:
+            mov_head = mov_head.next
+        return mov_head if mov_head else None
+
+    def delete(self, key):
+        """
+        Delete the node with the given value in the linked list, if the index is valid. If multiple key's found, delete the node with the first key.
+
+        Args:
+            index (int): Position to be deleted
+
+        Returns:
+            any : Value of the deleted node if its deleted
+                -1 : negative index
+                -2 : index greater than length+1
+                -3 : empty list
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if self.isEmpty():
+            # print("Cannot delete anything from an EMPTY LIST")
+            return -1
+        elif self.head.key == key:
+            return self.popFront()
+        else:
+            mov_head = self.head
+            while mov_head and mov_head.key != key:
+                mov_head = mov_head.next
+            if mov_head == None:
+                # print("Delete op failed: Specified key is not present in the list")
+                return -2
+            else:
+                prev_node = mov_head.prev
+                mov_head.prev.next = mov_head.next
+                if mov_head.next:
+                    mov_head.next.prev = mov_head.prev
+                tmp_val = mov_head.key
+                del mov_head
+                self.len -= 1
+                if prev_node.next == None:
+                    self.tail = prev_node
+                return tmp_val
+
+    def getFront(self):
+        return self.head
+
+    def getBack(self):
+        return self.tail
+
+    def get(self, index):
+        if index < 0:
+            return -1
+        mov_ind = 0
+        mov_head = self.head
+        while mov_head and mov_ind != index:
+            mov_head = mov_head.next
+            mov_ind += 1
+        if mov_head == None:
+            return -2
+        else:
+            return mov_head.key
+
+    def isEmpty(self) -> bool:
+        """Returns a boolean value by checking the head of the linked list
+
+        Returns:
+            bool: Status
+                True:   If the list is empty, hence head will point to None.
+                False:  If the list is not empty.
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+        return self.head == None
+
+    def length(self) -> int:
+        """Returns the length of the linked list
+
+        Returns:
+            int: Length of the linked list
+
+        Constraints:
+            Time: O(1) # because we store the len variable and update everytime we modify the list
+            Space: O(1)
+        """
+        return self.len
+
+    def display(self):
+        if self.isEmpty():
+            print("Cannot display since its an EMPTY LIST")
+            return
+        tmp_node = self.head
+        while tmp_node.next:
+            print(tmp_node.key, end=" <-> ")
+            tmp_node = tmp_node.next
+        print(tmp_node.key)
+        if tmp_node.key != self.tail.key:
+            print("Improper tail at:", self.tail.key)
+
+    def displayReverse(self):
+        if self.isEmpty():
+            print("Cannot display since its an EMPTY LIST")
+            return
+        tmp_node = self.tail
+        while tmp_node.prev:
+            print(tmp_node.key, end=" <-> ")
+            tmp_node = tmp_node.prev
+        print(tmp_node.key)
+        if tmp_node.key != self.head.key:
+            print("Improper head at:", self.head.key)
