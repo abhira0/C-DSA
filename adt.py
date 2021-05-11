@@ -1,6 +1,3 @@
-import inspect
-
-
 class LLNode:
     def __init__(self, key, next_node=None):
         self.key = key
@@ -407,8 +404,45 @@ class LinkedList:
         print(tmp_node.key)
         print(tmp_node.key == self.tail.key, self.tail.key)
 
-    def isCyclic1(self) -> bool:
-        """Check whether the given linked list is cyclic. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
+
+class LinkedlistBinOp:
+    @staticmethod
+    def getIntersectionNode(ll1: LinkedList, ll2: LinkedList) -> LLNode:
+        """Intersection of Two Linked Lists: Given two singly linked-lists ll1 and ll2, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return None.
+
+        Args:
+            ll1 (LinkedList): First linked list
+            ll2 (LinkedList): Second linked list
+
+        Returns:
+            LLNode: Node of intersection (if exists)
+            None  : If there is no intersection
+        """
+        lenA, lenB = ll1.len, ll2.len
+        tmpA, tmpB = ll1.head, ll2.head
+        if lenA < lenB:
+            impr = lenB - lenA
+            while impr:
+                tmpB = tmpB.next
+                impr -= 1
+        elif lenA > lenB:
+            impr = lenA - lenB
+            while impr:
+                tmpA = tmpA.next
+                impr -= 1
+        # now that both pointers points to the corresponding position from the end
+        # ie. length from tmpA to the end of tmpA = length from tmpB to the end of tmpB
+        while tmpA:
+            if tmpA == tmpB:  # if both are the same, then its the intersection node
+                return tmpA
+            tmpA = tmpA.next
+            tmpB = tmpB.next
+        # if both reach the end of the list, then there is no intersection
+        return None
+
+    @staticmethod
+    def isCyclic1(ll: LinkedList) -> bool:
+        """Linked List Cycle: Check whether the given linked list is cyclic. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
 
         Returns:
             bool: Status
@@ -419,8 +453,8 @@ class LinkedList:
             Time: O(n)
             Space: O(1)
         """
-        rabbit = self.head  # fast pointer
-        tortoise = self.head  # slow pointer
+        rabbit = ll.head  # fast pointer
+        tortoise = ll.head  # slow pointer
         while rabbit and rabbit.next:
             rabbit = rabbit.next.next  # move two steps front
             tortoise = tortoise.next  # move one step front
@@ -428,8 +462,9 @@ class LinkedList:
                 return True
         return False
 
-    def isCyclic2(self):
-        """Given a linked list, return the node where the cycle begins. If there is no cycle, return None. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
+    @staticmethod
+    def isCyclic2(ll: LinkedList) -> LLNode:
+        """Linked List Cycle II: Given a linked list, return the node where the cycle begins. If there is no cycle, return None. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
 
         Returns:
             LLNode: Returns the node which is the beginning of the cycle
@@ -439,8 +474,8 @@ class LinkedList:
             Time: O(n)
             Space: O(1)
         """
-        rabbit = self.head  # fast pointer
-        tortoise = self.head  # slow pointer
+        rabbit = ll.head  # fast pointer
+        tortoise = ll.head  # slow pointer
         while rabbit and rabbit.next:
             rabbit = rabbit.next.next  # move two steps front
             tortoise = tortoise.next  # move one step front
@@ -448,7 +483,7 @@ class LinkedList:
                 break
         else:  # If rabbit == None or rabbit.next == None
             return None
-        tortoise2 = self.head
+        tortoise2 = ll.head
         while tortoise != tortoise2:
             tortoise2 = tortoise2.next  # move one step front
             tortoise = tortoise.next  # move one step front
