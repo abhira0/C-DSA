@@ -23,10 +23,13 @@ class LLNode:
 
 
 class LinkedList:
-    def __init__(self):
+    def __init__(self, iterable=None):
         self.head = None
         self.tail = None
         self.len = 0
+        if iterable:
+            for element in iterable:
+                self.pushBack(element)
 
     def pushFront(self, key) -> None:
         """Add a node at the front of the linked list
@@ -402,44 +405,11 @@ class LinkedList:
             print(tmp_node.key, end=" -> ")
             tmp_node = tmp_node.next
         print(tmp_node.key)
-        print(tmp_node.key == self.tail.key, self.tail.key)
+        if tmp_node.key != self.tail.key:
+            print("Improper tail at:", self.tail.key)
 
 
 class LinkedlistBinOp:
-    @staticmethod
-    def getIntersectionNode(ll1: LinkedList, ll2: LinkedList) -> LLNode:
-        """Intersection of Two Linked Lists: Given two singly linked-lists ll1 and ll2, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return None.
-
-        Args:
-            ll1 (LinkedList): First linked list
-            ll2 (LinkedList): Second linked list
-
-        Returns:
-            LLNode: Node of intersection (if exists)
-            None  : If there is no intersection
-        """
-        lenA, lenB = ll1.len, ll2.len
-        tmpA, tmpB = ll1.head, ll2.head
-        if lenA < lenB:
-            impr = lenB - lenA
-            while impr:
-                tmpB = tmpB.next
-                impr -= 1
-        elif lenA > lenB:
-            impr = lenA - lenB
-            while impr:
-                tmpA = tmpA.next
-                impr -= 1
-        # now that both pointers points to the corresponding position from the end
-        # ie. length from tmpA to the end of tmpA = length from tmpB to the end of tmpB
-        while tmpA:
-            if tmpA == tmpB:  # if both are the same, then its the intersection node
-                return tmpA
-            tmpA = tmpA.next
-            tmpB = tmpB.next
-        # if both reach the end of the list, then there is no intersection
-        return None
-
     @staticmethod
     def isCyclic1(ll: LinkedList) -> bool:
         """Linked List Cycle: Check whether the given linked list is cyclic. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
@@ -488,6 +458,72 @@ class LinkedlistBinOp:
             tortoise2 = tortoise2.next  # move one step front
             tortoise = tortoise.next  # move one step front
         return tortoise
+
+    @staticmethod
+    def getIntersectionNode(ll1: LinkedList, ll2: LinkedList) -> LLNode:
+        """Intersection of Two Linked Lists: Given two singly linked-lists ll1 and ll2, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return None.
+
+        Args:
+            ll1 (LinkedList): First linked list
+            ll2 (LinkedList): Second linked list
+
+        Returns:
+            LLNode: Node of intersection (if exists)
+            None  : If there is no intersection
+        """
+        lenA, lenB = ll1.len, ll2.len
+        tmpA, tmpB = ll1.head, ll2.head
+        if lenA < lenB:
+            impr = lenB - lenA
+            while impr:
+                tmpB = tmpB.next
+                impr -= 1
+        elif lenA > lenB:
+            impr = lenA - lenB
+            while impr:
+                tmpA = tmpA.next
+                impr -= 1
+        # now that both pointers points to the corresponding position from the end
+        # ie. length from tmpA to the end of tmpA = length from tmpB to the end of tmpB
+        while tmpA:
+            if tmpA == tmpB:  # if both are the same, then its the intersection node
+                return tmpA
+            tmpA = tmpA.next
+            tmpB = tmpB.next
+        # if both reach the end of the list, then there is no intersection
+        return None
+
+    @staticmethod
+    def removeNthFromEnd(ll: LinkedList, n: int):
+        """Remove Nth Node From End of List: Given a linked list, remove the nth node from the end of the list.
+
+        Args:
+            ll (LinkedList): Linked list to be used
+            n (int): index from the last (1 corresponds to the last element, 2 -> last but first and so on...)
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        #! Not tested
+        length = ll.len
+        del_ind = length - n
+        ll.deleteAtIndex(del_ind)
+
+    @staticmethod
+    def reverse(ll: LinkedList):
+        if ll.head == None:  # empty list
+            return None
+        if ll.head.next == None:  # single node list
+            return ll.head  # no changes
+        tmp1, tmp2, tmp3 = ll.head, None, None
+        ll.tail = ll.head
+        while tmp1:
+            tmp3 = tmp2
+            tmp2 = tmp1
+            tmp1 = tmp1.next
+            tmp2.next = tmp3
+        ll.head = tmp2
 
 
 class DLLNode:
