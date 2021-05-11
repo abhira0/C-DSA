@@ -511,11 +511,19 @@ class LinkedlistBinOp:
         ll.deleteAtIndex(del_ind)
 
     @staticmethod
-    def reverse(ll: LinkedList):
+    def reverse(ll: LinkedList) -> None:
+        """Given a singly linked list, reverse the list by modifying given linked list itself.
+
+        Args:
+            ll (LinkedList): Linked List to be reversed
+
+        Returns:
+            None: Returns None
+        """
         if ll.head == None:  # empty list
             return None
         if ll.head.next == None:  # single node list
-            return ll.head  # no changes
+            return None  # no changes
         tmp1, tmp2, tmp3 = ll.head, None, None
         ll.tail = ll.head
         while tmp1:
@@ -525,9 +533,48 @@ class LinkedlistBinOp:
             tmp2.next = tmp3
         ll.head = tmp2
 
+    @staticmethod
+    def removeElements(ll: LinkedList, val: int) -> None:
+        """Remove Linked List Elements: Given a linked list and an integer val, remove all the nodes of the linked list that has LLNode.key == val.
+
+        Args:
+            ll (LinkedList): Linked list to be modified
+            val (int): nodes with the given value will be deleted
+        """
+        if ll.head == None:
+            ...
+        elif ll.head.next == None:  # len(LinkedList) = 1
+            if ll.head.key == val:
+                ll.popFront()
+        else:
+            # We skip checking of head node for now, that is why we start mov_head as head.next
+            mov_head, prev = ll.head.next, ll.head
+            while mov_head:
+                if mov_head.key == val:
+                    prev.next = mov_head.next
+                    del_tmp = mov_head
+                    mov_head = mov_head.next
+                    del del_tmp
+                    if mov_head == None:  # If the deleted node was last node,
+                        ll.tail = prev  # then make prev node as the new tail
+                else:
+                    # Move forward only if the mov_head.val != val, because we we delete a node then
+                    # we will be moving mov_head one step further and we need to check the current mov_head too
+                    prev = mov_head
+                    mov_head = mov_head.next
+            # Since we skipped checking the head node, we check it now
+            if ll.head.key == val:
+                ll.popFront()
+
 
 class DLLNode:
     def __init__(self, key, prev_node=None, next_node=None):
         self.key = key
         self.next = next_node
         self.prev = prev_node
+
+
+ll = LinkedList([1, 1])
+ll.display()
+LinkedlistBinOp.removeElements(ll, 1)
+ll.display()
