@@ -573,6 +573,46 @@ class LinkedlistBinOp:
             if ll.head.key == val:
                 ll.popFront()
 
+    @staticmethod
+    def oddEvenList(ll: LinkedList) -> None:
+        """Odd Even Linked List: Given a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices.
+
+        Args:
+            ll (LinkedList): Linked List to be modified
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        if ll.head == None or ll.head.next == None or ll.head.next.next == None:
+            ...
+        else:
+            # Create 4 new pointers, 2 for even linked list and 2 for odd linked list
+            # Make 1st node as head of odd list, 2nd node as head of even list
+            odd_head, odd_tail = ll.head, ll.head
+            even_head, even_tail = ll.head.next, ll.head.next
+            # Iteration begins with the third node
+            mov_head = ll.head.next.next
+            # Now heads of both odd and even linked list points to None
+            odd_head.next = None
+            even_head.next = None
+            discriminator = 1  # index used to differentiate odd and even numbers
+            while mov_head:
+                if discriminator % 2 == 0:
+                    even_tail.next = mov_head
+                    even_tail = mov_head
+                else:
+                    odd_tail.next = mov_head
+                    odd_tail = mov_head
+                # Create new tmp_mov_head to make the newly added node's next as None
+                tmp_mov_head = mov_head
+                mov_head = mov_head.next
+                tmp_mov_head.next = None
+                discriminator += 1
+            odd_tail.next = even_head
+            ll.head = odd_head
+            ll.tail = even_tail
+
 
 class DLLNode:
     def __init__(self, key, prev_node=None, next_node=None):
@@ -581,7 +621,7 @@ class DLLNode:
         self.prev = prev_node
 
 
-ll = LinkedList([1, 1])
+ll = LinkedList(range(1, 10))
 ll.display()
-LinkedlistBinOp.removeElements(ll, 1)
+LinkedlistBinOp.oddEvenList(ll)
 ll.display()
