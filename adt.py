@@ -1,7 +1,28 @@
+import inspect
+
+
 class LLNode:
     def __init__(self, key, next_node=None):
         self.key = key
         self.next = next_node
+
+    def update_len(self, n: int) -> None:
+        """! Deprecated !
+        Update the length of the calling linked list
+
+        Args:
+            n (int): integer to be added o the length, can be both negative and positive
+
+        Reference:
+            https://stackoverflow.com/questions/17065086/how-to-get-the-caller-class-name-inside-a-function-of-another-class-in-python
+        """
+        try:
+            inspect_stack = inspect.stack()
+            # reference to the calling class from the internal stack and update the length of that linked list
+            inspect_stack[2][0].f_locals["self"].len += n
+        except:
+            # if class of calling function is not linked list
+            ...
 
 
 class LinkedList:
@@ -15,10 +36,14 @@ class LinkedList:
 
         Args:
             key (any): Value of the node to be added
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
         """
         node = LLNode(key, self.head)
         self.head = node
-        if self.tail == None:
+        if self.tail == None:  # if list was previously empty
             self.tail = node
         self.len += 1
 
@@ -27,6 +52,10 @@ class LinkedList:
 
         Args:
             key (any): Value of the node to be added
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
         """
         node = LLNode(key)
         if self.isEmpty():  # if empty
@@ -38,6 +67,16 @@ class LinkedList:
         self.len += 1
 
     def popFront(self):
+        """Delete the front node of the linked list and returns the value of it.
+
+        Returns:
+            any: Returns the value of the deleted node
+            -1 : If the list was empty
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
         if self.isEmpty():  # if empty
             print("Cannot pop since it's an EMPTY LIST")
             return -1
@@ -49,6 +88,7 @@ class LinkedList:
             self.tail = None
             # Delete first node
             del tmp_node
+            self.len -= 1
             return tmp_key
         else:
             # tmp_node points to first node
@@ -58,13 +98,24 @@ class LinkedList:
             self.head = self.head.next
             # Delete tmp_node which points to first node
             del tmp_node
+            self.len -= 1
             return tmp_key
-        self.len -= 1
 
     def popBack(self):
+        """Deletes the last node (if exists) and returns the value of it.
+
+        Returns:
+            any: Returns the value of the deleted node
+            -1 : If the list was empty
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
+        """
+
         # if empty or if only one element
         if self.isEmpty() or self.head == self.tail:
-            self.popFront()
+            return self.popFront()
         else:
             mov_node = self.head
             # move to last but first position
@@ -72,6 +123,7 @@ class LinkedList:
                 mov_node = mov_node.next
             # make last node as tmp_node
             tmp_node = mov_node.next
+            tmp_val = tmp_node.key
             # point last but first node's next to None
             mov_node.next = None
             # make last but first node as tail
@@ -79,38 +131,71 @@ class LinkedList:
             # delete last node
             del tmp_node
             self.len -= 1
+            return tmp_val
 
-    def addAfter(self, find_key, key):
+    def addAfter(self, find_key, key) -> int:
+        """Adds an node with specified key after the node with find_key. If multiple node has the value find_key, first find_key in the list will get the priority.
+
+        Args:
+            find_key (any): Value to find in the linked list
+            key (any): Value to be inserted after find_key
+
+        Returns:
+            int: Status
+                -1: List is empty
+                -2: Specified Key is not present in the list
+                 1: Successful insertion
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
         if self.isEmpty():
-            print("Cannot insert the key since the list is EMPTY")
+            # print("Cannot insert the key since the list is EMPTY")
+            return -1
         else:
             mov_head = self.head
             while (mov_head) and (mov_head.key != find_key):
                 mov_head = mov_head.next
             if mov_head == None:
-                print("Specified Key is not present in the list")
+                # print("Specified Key is not present in the list")
+                return -2
             else:
-                node = LLNode(key, mov_head.next)
-                mov_head.next = node
-                if self.tail == mov_head:
-                    self.tail = node
-                self.len += 1
+                self.addAfterNode(mov_head, key)
+                return 1
 
-    def addBefore(self, find_key, key):
+    def addBefore(self, find_key, key) -> int:
+        """Adds an node with specified key before the node with find_key. If multiple node has the value find_key, first find_key in the list will get the priority.
+
+        Args:
+            find_key (any): Value to find in the linked list
+            key (any): Value to be inserted before find_key
+
+        Returns:
+            int: Status
+                -1: List is empty
+                -2: Specified Key is not present in the list
+                 1: Successful insertion
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
         if self.isEmpty():
-            print("Cannot insert the key since the list is EMPTY")
+            # print("Cannot insert the key since the list is EMPTY")
+            return -1
         if self.head.key == find_key:
-            self.pushFront()
+            self.pushFront(key)
         else:
             mov_head = self.head
             while (mov_head.next) and (mov_head.next.key != find_key):
                 mov_head = mov_head.next
             if mov_head.next == None:
-                print("Specified Key is not present in the list")
+                # print("Specified Key is not present in the list")
+                return -2
             else:
-                node = LLNode(key, mov_head.next)
-                mov_head.next = node
-                self.len += 1
+                self.addAfterNode(mov_head, key)
+                return 1
 
     def addAfterNode(self, node: LLNode, key) -> int:
         """Add a node of value key after the given linked list node 'node'. If given node is the last node, modify the tail pointer. If the given node is None, raise an Exception
@@ -123,6 +208,10 @@ class LinkedList:
             int: Status
                 1 : Inserted at the middle of the linked list
                 2 : Inserted at the end of the linked list, so tail is modified
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
         """
         new_node = LLNode(key, node.next)
         node.next = new_node
@@ -144,6 +233,10 @@ class LinkedList:
                  1 : insertion successful
                 -1 : negative index
                 -2 : index greater than length+1
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
         """
         if index < 0:
             return -1
@@ -165,11 +258,25 @@ class LinkedList:
     def deleteAtIndex(self, index: int):
         """
         Delete the index-th node in the linked list, if the index is valid.
+
+        Args:
+            index (int): Position to be deleted
+
+        Returns:
+            any : Value of the deleted node if its deleted
+                -1 : negative index
+                -2 : index greater than length+1
+                -3 : empty list
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
         """
         if index < 0:
             return -1
         elif self.isEmpty():
             print("Cannot delete anything from an EMPTY LIST")
+            return -3
         elif index == 0:
             return self.popFront()
         else:
@@ -185,16 +292,46 @@ class LinkedList:
             else:
                 prev_node.next = mov_head.next
                 del mov_head
+                self.len -= 1
                 if prev_node.next == None:
                     self.tail = prev_node
 
     def find(self, key):
+        """Find the given key in the list
+
+        Args:
+            key (any): Key to be found
+
+        Returns:
+            node: If key is present
+            None: If key is not present
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
         mov_head = self.head
         while mov_head and mov_head.key != key:
             mov_head = mov_head.next
         return mov_head if mov_head else None
 
     def delete(self, key):
+        """
+        Delete the node with the given value in the linked list, if the index is valid. If multiple key's found, delete the node with the first key.
+
+        Args:
+            index (int): Position to be deleted
+
+        Returns:
+            any : Value of the deleted node if its deleted
+                -1 : negative index
+                -2 : index greater than length+1
+                -3 : empty list
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
         if self.isEmpty():
             print("Cannot delete anything from an EMPTY LIST")
         elif self.head.key == key:
@@ -240,8 +377,24 @@ class LinkedList:
             bool: Status
                 True:   If the list is empty, hence head will point to None.
                 False:  If the list is not empty.
+
+        Constraints:
+            Time: O(1)
+            Space: O(1)
         """
         return self.head == None
+
+    def length(self) -> int:
+        """Returns the length of the linked list
+
+        Returns:
+            int: Length of the linked list
+
+        Constraints:
+            Time: O(1) # because we store the len variable and update everytime we modify the list
+            Space: O(1)
+        """
+        return self.len
 
     def display(self):
         if self.isEmpty():
@@ -253,6 +406,53 @@ class LinkedList:
             tmp_node = tmp_node.next
         print(tmp_node.key)
         print(tmp_node.key == self.tail.key, self.tail.key)
+
+    def isCyclic1(self) -> bool:
+        """Check whether the given linked list is cyclic. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
+
+        Returns:
+            bool: Status
+                True:   If the linked list has the cycle
+                False:  If the linked list is not cyclic
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        rabbit = self.head  # fast pointer
+        tortoise = self.head  # slow pointer
+        while rabbit and rabbit.next:
+            rabbit = rabbit.next.next  # move two steps front
+            tortoise = tortoise.next  # move one step front
+            if rabbit == tortoise:  # if both meet, there is a cycle
+                return True
+        return False
+
+    def isCyclic2(self):
+        """Given a linked list, return the node where the cycle begins. If there is no cycle, return None. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
+
+        Returns:
+            LLNode: Returns the node which is the beginning of the cycle
+            None  : If the linked list has no cycle
+
+        Constraints:
+            Time: O(n)
+            Space: O(1)
+        """
+        rabbit = self.head  # fast pointer
+        tortoise = self.head  # slow pointer
+        while rabbit and rabbit.next:
+            rabbit = rabbit.next.next  # move two steps front
+            tortoise = tortoise.next  # move one step front
+            if rabbit == tortoise:  # if both meet, there is a cycle
+                break
+        else:  # If rabbit == None or rabbit.next == None
+            return None
+        tortoise2 = self.head
+        while tortoise != tortoise2:
+            tortoise2 = tortoise2.next  # move one step front
+            tortoise = tortoise.next  # move one step front
+        return tortoise
 
 
 class DLLNode:
