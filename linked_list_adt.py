@@ -675,46 +675,112 @@ class LinkedlistOp:
         return True
 
     # @staticmethod
-    def mergeTwoLists(ll1: LinkedList, ll2: LinkedList) -> LinkedList:
-        if ll1.head == None:
+    def mergeTwoSortedLists(ll1: LinkedList, ll2: LinkedList) -> LinkedList:
+        """Merge Two Sorted Lists: Merge two sorted linked lists and return it as a sorted list. The list should be made by splicing together the nodes of the first two lists.
+
+        Args:
+            ll1 (LinkedList): First Linked List
+            ll2 (LinkedList): Second Linked List
+
+        Returns:
+            LinkedList: Merged Linked List
+
+        Constraints:
+            Time:  O(n)
+            Space: O(1)
+        """
+        if ll1.head == None:  # If 1st list is empty then return 2nd list as it is
             return ll2
-        elif ll2.head == None:
+        elif ll2.head == None:  # If 2nd list is empty then return 1st list as it is
             return ll1
-        ll1 = deepcopy(ll1)
-        ll2 = deepcopy(ll2)
+        # To make sure that the function doesn't affect original linked list
+        ll1, ll2 = deepcopy(ll1), deepcopy(ll2)
+        # Create a new linked list, only LinkedList object is created.
         ll3 = LinkedList()
+        # We gotta initially point head of newly created list to worthy node
         if ll1.head.key < ll2.head.key:
             ll3.head = ll1.head
             ll1.head = ll1.head.next
         else:
             ll3.head = ll2.head
             ll2.head = ll2.head.next
-        ll3.head.next = None
-        tmp1, tmp2, tmp3 = ll1.head, ll2.head, ll3.head
-        while tmp1 and tmp2:
-            if tmp1.key < tmp2.key:
-                tmp3.next = tmp1
-                tmp1 = tmp1.next
+        # Check for the smallest value in node and append it to the newly created list
+        tmp3 = ll3.head
+        while ll1.head and ll2.head:
+            if ll1.head.key < ll2.head.key:
+                tmp3.next = ll1.head
+                ll1.head = ll1.head.next
             else:
-                tmp3.next = tmp2
-                tmp2 = tmp2.next
+                tmp3.next = ll2.head
+                ll2.head = ll2.head.next
             tmp3 = tmp3.next
-            tmp3.next = None
             ll3.tail = tmp3
+        # If ll2.head got to the end, then append nodes of ll1 as it is
+        while ll1.head:
+            tmp3.next = ll1.head
+            ll1.head = ll1.head.next
+            tmp3 = tmp3.next
+            ll3.tail = tmp3
+        # If ll1.head got to the end, then append nodes of ll2 as it is
+        while ll2.head:
+            tmp3.next = ll2.head
+            ll2.head = ll2.head.next
+            tmp3 = tmp3.next
+            ll3.tail = tmp3
+        ll1.tail, ll2.tail = None, None
+        # Return newly created merged linked list
+        return ll3
+
+    def addTwoNumbers(ll1: LinkedList, ll2: LinkedList) -> LinkedList:
+        """Add Two Numbers: Given two linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list. Assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+        Args:
+            ll1 (LinkedList): First Linked List
+            ll2 (LinkedList): Second Linked List
+
+        Returns:
+            LinkedList: Sum of two linked list as a newly created linked list
+
+        Constraints:
+            Time:  O(n)
+            Space: O(n) # linked list with sum (max: n+1 nodes)
+        """
+        if ll1.head == None:  # If 1st list is empty then return 2nd list as it is
+            return ll2
+        elif ll2.head == None:  # If 2nd list is empty then return 1st list as it is
+            return ll1
+        # Create a new linked list, only LinkedList object is created.
+        ll3 = LinkedList()
+        # We gotta initially point head of newly created list
+        adder = ll1.head.key + ll2.head.key
+        zum, carry = adder % 10, adder // 10
+        ll3.pushFront(zum)
+        tmp3 = ll3.head
+        tmp1, tmp2 = ll1.head.next, ll2.head.next
+        # Create a new node with the sum of two nodes and append it
+        while tmp1 and tmp2:
+            adder = tmp1.key + tmp2.key + carry
+            zum, carry = adder % 10, adder // 10
+            tmp3.next = LLNode(zum)
+            tmp1, tmp2, tmp3 = tmp1.next, tmp2.next, tmp3.next
+            ll3.tail = tmp3
+        # If ll2.head got to the end, then append nodes of ll1 as it is
         while tmp1:
-            tmp3.next = tmp1
-            tmp1 = tmp1.next
-            tmp3 = tmp3.next
-            tmp3.next = None
+            adder = tmp1.key + carry
+            zum, carry = adder % 10, adder // 10
+            tmp3.next = LLNode(zum)
+            tmp1, tmp3 = tmp1.next, tmp3.next
             ll3.tail = tmp3
+        # If ll1.head got to the end, then append nodes of ll2 as it is
         while tmp2:
-            tmp3.next = tmp2
-            tmp2 = tmp2.next
-            tmp3 = tmp3.next
-            tmp3.next = None
+            adder = tmp2.key + carry
+            zum, carry = adder % 10, adder // 10
+            tmp3.next = LLNode(zum)
+            tmp2, tmp3 = tmp2.next, tmp3.next
             ll3.tail = tmp3
-        ll1.display()
-        ll2.display()
+        # Return newly created merged linked list
+        if carry:
+            ll3.pushBack(1)
         return ll3
 
 
@@ -1144,9 +1210,3 @@ class DoublyLinkedList:
         print(tmp_node.key)
         if tmp_node.key != self.head.key:
             print("Improper head at:", self.head.key)
-
-
-ll1 = LinkedList([1])
-ll2 = LinkedList([2, 3, 6, 7, 8, 9])
-ll3 = LinkedlistOp.mergeTwoLists(ll1, ll2)
-ll3.display()
