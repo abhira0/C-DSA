@@ -674,6 +674,49 @@ class LinkedlistOp:
             mov_new_head = mov_new_head.next
         return True
 
+    # @staticmethod
+    def mergeTwoLists(ll1: LinkedList, ll2: LinkedList) -> LinkedList:
+        if ll1.head == None:
+            return ll2
+        elif ll2.head == None:
+            return ll1
+        ll1 = deepcopy(ll1)
+        ll2 = deepcopy(ll2)
+        ll3 = LinkedList()
+        if ll1.head.key < ll2.head.key:
+            ll3.head = ll1.head
+            ll1.head = ll1.head.next
+        else:
+            ll3.head = ll2.head
+            ll2.head = ll2.head.next
+        ll3.head.next = None
+        tmp1, tmp2, tmp3 = ll1.head, ll2.head, ll3.head
+        while tmp1 and tmp2:
+            if tmp1.key < tmp2.key:
+                tmp3.next = tmp1
+                tmp1 = tmp1.next
+            else:
+                tmp3.next = tmp2
+                tmp2 = tmp2.next
+            tmp3 = tmp3.next
+            tmp3.next = None
+            ll3.tail = tmp3
+        while tmp1:
+            tmp3.next = tmp1
+            tmp1 = tmp1.next
+            tmp3 = tmp3.next
+            tmp3.next = None
+            ll3.tail = tmp3
+        while tmp2:
+            tmp3.next = tmp2
+            tmp2 = tmp2.next
+            tmp3 = tmp3.next
+            tmp3.next = None
+            ll3.tail = tmp3
+        ll1.display()
+        ll2.display()
+        return ll3
+
 
 class DLLNode:
     def __init__(self, key, prev_node=None, next_node=None):
@@ -1101,3 +1144,9 @@ class DoublyLinkedList:
         print(tmp_node.key)
         if tmp_node.key != self.head.key:
             print("Improper head at:", self.head.key)
+
+
+ll1 = LinkedList([1])
+ll2 = LinkedList([2, 3, 6, 7, 8, 9])
+ll3 = LinkedlistOp.mergeTwoLists(ll1, ll2)
+ll3.display()
