@@ -17,24 +17,19 @@ class TreeHeight:
         self.n = int(sys.stdin.readline())
         self.parent = list(map(int, sys.stdin.readline().split()))
 
-    # def read(self):
-    #     self.parent = list(map(int, "4 -1 4 1 1".split(" ")))
-    #     self.n = len(self.parent)
-
     def compute_height(self):
         mapper = self.getMapper()
         queue = [*mapper[-1]]
+        new_queue = []
         height = 0
-        print(mapper)
         while queue:
             par = queue.pop(0)
+            if par in mapper:
+                new_queue.extend(mapper[par])
             if not queue:
                 height += 1
-            try:
-                queue.extend(mapper[par])
-            except:
-                ...
-            print(height, queue)
+                queue.extend(new_queue)
+                new_queue = []
         return height
 
 
