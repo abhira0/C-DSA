@@ -84,6 +84,7 @@ class MinMaxStack:
 
     def pop(self):
         self.minstack.pop()
+        self.maxstack.pop()
         return self.stack.pop()
 
     def top(self):
