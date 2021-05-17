@@ -72,6 +72,10 @@ class RequestList:
         if self.ind < self.len:
             return self.requests[self.ind]
 
+    def get(self, ind) -> Request:
+        if ind < self.len:
+            return self.requests[ind]
+
     def isCompleted(self):
         return self.ind == self.len
 
@@ -105,21 +109,36 @@ def process(requests: RequestList, size, verbose: bool = False):
     time = 0
     buffer_size = 0
     last_proc_ind = 0
+    idle = True
     proc_req: Request = None
     while True:
+        cach_requests = deepcopy(requests.requests)
         print(f"Time: {time}")
-        print(requests.getNext().arrival, time) if requests.getNext() else None
+        # print(requests.getNext().arrival, time) if requests.getNext() else None
         while requests.getNext() and requests.getNext().arrival == time:
-            print("\t", buffer_size, size)
-            if buffer_size < size:
+            print("\t| Sizes:   ", buffer_size, size)
+            print(
+                "\t| ProcReq: ", proc_req.arrival, proc_req.processing
+            ) if proc_req else None
+            if proc_req and proc_req.completed_at == time:
+                buffer_size -= 1
+                proc_req = None
+                idle = True
+            if buffer_size < size and idle:
                 proc_req = requests.getNext()
-                last_proc_req = proc_req
+                idle = False
+                print(f"Getting: ", proc_req.arrival, proc_req.processing)
                 proc_req.began_at = time
                 proc_req.completed_at = time + proc_req.processing
                 buffer_size += 1
-            if last_proc_req.completed_at == time:
-                buffer_size -= 1
             requests.ind += 1
+        if proc_req and proc_req.completed_at == time:
+            buffer_size -= 1
+            proc_req = None
+            idle = True
+        print(f"Now index: {requests.ind}", end="\t")
+        print([[j for j in i.__dict__.values()] for i in cach_requests], end=" -> ")
+        print([[j for j in i.__dict__.values()] for i in requests.requests])
 
         time += 1
         if requests.ind == requests.len:
