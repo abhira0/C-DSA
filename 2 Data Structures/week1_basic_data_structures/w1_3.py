@@ -102,89 +102,29 @@ def disSlay(wait_until, time, prev_q, q):
 
 def process(requests: RequestList, size, verbose: bool = False):
     q = Queue(size)
-    dropped = Queue()
     time = 0
-    processing_req: Request = None
-    wait_until = -1
+    buffer_size = 0
+    last_proc_ind = 0
+    proc_req: Request = None
     while True:
-        once_flag = True
-        prev_q = q.copy()
-        if verbose:
-            print(f"Time: {time}")
-            print(
-                "Requests",
-                requests.ind,
-                [[f for f in i.__dict__.values()] for i in requests.requests],
-            )
+        print(f"Time: {time}")
+        print(requests.getNext().arrival, time) if requests.getNext() else None
         while requests.getNext() and requests.getNext().arrival == time:
-            if (
-                requests.getNext().processing == 0
-                and wait_until in [time, -1]
-                and q.nextUp()
-                and q.nextUp().processing == 0
-            ):
-                q.forcedEnqueue(requests.getNext(), verbose)
-            elif q.nextUp() and q.nextUp().arrival == wait_until and once_flag:
-                q.forcedEnqueue(requests.getNext(), verbose)
-                once_flag = False
-            else:
-                print(q.nextUp().arrival) if q.nextUp() else None
-                ret_flag = q.enqueue(requests.getNext(), processing_req, verbose)
-                if ret_flag == -1:
-                    dropped.enqueue(requests.getNext(), None)
+            print("\t", buffer_size, size)
+            if buffer_size < size:
+                proc_req = requests.getNext()
+                last_proc_req = proc_req
+                proc_req.began_at = time
+                proc_req.completed_at = time + proc_req.processing
+                buffer_size += 1
+            if last_proc_req.completed_at == time:
+                buffer_size -= 1
             requests.ind += 1
-            while True:
-                if wait_until == time and processing_req:
-                    processing_req.completed_at = time
-                    processing_req = None
-                if wait_until <= time and q.nextUp() and q.nextUp().processing == 0:
-                    processing_req = q.dequeue()
-                    processing_req.began_at = time
-                    processing_req.completed_at = time
-                    processing_req = None
-                else:
-                    # cprint(processing_req, "red")
-                    break
-        while True:
-            if wait_until == time and processing_req:
-                processing_req.completed_at = time
-                processing_req = None
-            if wait_until <= time and q.nextUp() and q.nextUp().processing == 0:
-                processing_req = q.dequeue()
-                processing_req.began_at = time
-                processing_req.completed_at = time
-                processing_req = None
-            else:
-                # cprint(processing_req, "red")
-                break
-        while processing_req == None and not q.isEmpty() and wait_until <= time:
-            processing_req = q.dequeue()
-            wait_until = time + processing_req.processing
-            processing_req.began_at = time
-            # Disclay(wait_until, time, processing_req)
+
         time += 1
-        while not dropped.isEmpty():
-            if verbose:
-                cprint([(i.arrival, i.processing) for i in dropped.queue], "cyan")
-            drop_req = dropped.dequeue()
-            if drop_req.arrival == time:
-                tmp_resp = q.enqueue(drop_req, processing_req, verbose)
-                print("cs")
-                if tmp_resp == 1:
-                    if verbose:
-                        cprint("-1ed", "cyan")
-        if verbose:
-            disSlay(wait_until, time, prev_q, q)
-        if requests.isCompleted() and q.isEmpty():
+        if requests.ind == requests.len:
             break
-        # if time == 5:
-        #     break
-    if verbose:
-        print(
-            "Requests",
-            requests.ind,
-            [[f for f in i.__dict__.values()] for i in requests.requests],
-        )
+
     return requests.requests
 
 
@@ -224,6 +164,7 @@ for i in range(1, 15):
         expected_result = f.read()
     actual_result = main(chan)
     if expected_result != actual_result:
+        print("-" * 20)
         main(chan, verbose=True)
         print("-" * 20)
         print(f"Testcase: {i}")
